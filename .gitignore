@@ -1,6 +1,7 @@
 __master
 docs
 .superpowers
+.vscode
 CLAUDE.md
 DESIGN.md
 PRODUCT.md
