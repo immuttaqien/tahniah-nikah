@@ -11,6 +11,52 @@ themeToggle.addEventListener('click', () => {
   try { localStorage.setItem('nf_theme', isDark ? 'dark' : 'light'); } catch(e) {}
 });
 
+/* ============ BACKGROUND MUSIC ============ */
+const bgMusic = document.getElementById('bgMusic');
+const audioToggle = document.getElementById('audioToggle');
+let musicStarted = false;
+
+function startMusic() {
+  if (musicStarted) return;
+  bgMusic.volume = 0.5;
+  bgMusic.play().then(() => {
+    musicStarted = true;
+    audioToggle.classList.remove('muted');
+  }).catch(() => {
+    // Autoplay blocked — keep muted state, will retry on next interaction
+    audioToggle.classList.add('muted');
+  });
+}
+
+// Try autoplay on first user interaction (browser policy requires gesture)
+function onFirstInteraction() {
+  startMusic();
+  document.removeEventListener('click', onFirstInteraction);
+  document.removeEventListener('touchstart', onFirstInteraction);
+  document.removeEventListener('scroll', onFirstInteraction);
+}
+document.addEventListener('click', onFirstInteraction, { once: true });
+document.addEventListener('touchstart', onFirstInteraction, { once: true });
+document.addEventListener('scroll', onFirstInteraction, { once: true, passive: true });
+
+// Also try immediate autoplay
+startMusic();
+
+audioToggle.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent triggering onFirstInteraction twice
+  if (!musicStarted) {
+    startMusic();
+    return;
+  }
+  if (bgMusic.paused) {
+    bgMusic.play();
+    audioToggle.classList.remove('muted');
+  } else {
+    bgMusic.pause();
+    audioToggle.classList.add('muted');
+  }
+});
+
 /* ============ NAV scroll state ============ */
 const nav = document.getElementById("nav");
 const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 40);

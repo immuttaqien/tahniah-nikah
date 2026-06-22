@@ -310,7 +310,8 @@ html.anim .reveal.d4 { transition-delay: 0.4s; }
 }
 
 /* Theme toggle button */
-.theme-toggle {
+.theme-toggle,
+.audio-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -324,11 +325,13 @@ html.anim .reveal.d4 { transition-delay: 0.4s; }
   transition: border-color 0.3s, transform 0.3s var(--ease-out);
   flex-shrink: 0;
 }
-.theme-toggle:hover {
+.theme-toggle:hover,
+.audio-toggle:hover {
   border-color: var(--accent);
   transform: scale(1.08);
 }
-.theme-toggle svg {
+.theme-toggle svg,
+.audio-toggle svg {
   width: 18px;
   height: 18px;
   transition: transform 0.4s var(--ease-out);
@@ -337,6 +340,12 @@ html.anim .reveal.d4 { transition-delay: 0.4s; }
 .theme-toggle .icon-moon { display: block; }
 html.dark .theme-toggle .icon-sun { display: block; }
 html.dark .theme-toggle .icon-moon { display: none; }
+
+/* Audio toggle states */
+.audio-toggle .icon-sound-on { display: block; }
+.audio-toggle .icon-sound-off { display: none; }
+.audio-toggle.muted .icon-sound-on { display: none; }
+.audio-toggle.muted .icon-sound-off { display: block; }
 
 /* ============ HERO ============ */
 .hero {
