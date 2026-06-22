@@ -310,7 +310,8 @@ html.anim .reveal.d4 { transition-delay: 0.4s; }
 }
 
 /* Theme toggle button */
-.theme-toggle {
+.theme-toggle,
+.audio-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -324,11 +325,13 @@ html.anim .reveal.d4 { transition-delay: 0.4s; }
   transition: border-color 0.3s, transform 0.3s var(--ease-out);
   flex-shrink: 0;
 }
-.theme-toggle:hover {
+.theme-toggle:hover,
+.audio-toggle:hover {
   border-color: var(--accent);
   transform: scale(1.08);
 }
-.theme-toggle svg {
+.theme-toggle svg,
+.audio-toggle svg {
   width: 18px;
   height: 18px;
   transition: transform 0.4s var(--ease-out);
@@ -337,6 +340,12 @@ html.anim .reveal.d4 { transition-delay: 0.4s; }
 .theme-toggle .icon-moon { display: block; }
 html.dark .theme-toggle .icon-sun { display: block; }
 html.dark .theme-toggle .icon-moon { display: none; }
+
+/* Audio toggle states */
+.audio-toggle .icon-sound-on { display: block; }
+.audio-toggle .icon-sound-off { display: none; }
+.audio-toggle.muted .icon-sound-on { display: none; }
+.audio-toggle.muted .icon-sound-off { display: block; }
 
 /* ============ HERO ============ */
 .hero {
@@ -421,7 +430,7 @@ html.dark .hero {
 }
 .hero .dua {
   font-family: var(--arabic);
-  font-size: clamp(1.7rem, 5vw, 2.85rem);
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
   line-height: 1.95;
   color: var(--text-primary);
   direction: rtl;
@@ -858,23 +867,26 @@ html.dark .ayat-orn svg { opacity: 0.9; }
   background: linear-gradient(180deg, var(--bg-deep), var(--bg-body));
 }
 .tamu-wrap {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 44px;
   max-width: 1000px;
   margin: 0 auto;
 }
 @media (min-width: 880px) {
   .tamu-wrap {
+    display: grid;
     grid-template-columns: 0.82fr 1.18fr;
     gap: 52px;
     align-items: start;
   }
+  .gb-form {
+    position: sticky;
+    top: 96px;
+  }
 }
 
 .gb-form {
-  position: sticky;
-  top: 96px;
   padding: 36px 30px;
   border-radius: 14px;
   border: 1px solid var(--card-border);
@@ -1058,6 +1070,18 @@ html.dark .field select {
   overflow-y: auto;
   padding-right: 10px;
 }
+@media (max-width: 879px) {
+  .gb-list {
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+  /* Force guestbook messages visible on mobile — override reveal animation */
+  html.anim .tamu-wrap > .reveal.d2 {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
 .gb-list::-webkit-scrollbar { width: 6px; }
 .gb-list::-webkit-scrollbar-thumb {
   background: color-mix(in oklch, var(--accent) 32%, transparent);
@@ -1179,4 +1203,59 @@ footer .yr {
   font-size: 0.95rem;
   color: var(--text-dim);
   margin-top: 26px;
+}
+
+/* ============ SCROLL TO TOP ============ */
+.scroll-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: var(--z-nav);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in oklch, var(--accent) 40%, transparent);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--accent);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.4s var(--ease-out),
+    visibility 0.4s,
+    transform 0.4s var(--ease-out),
+    border-color 0.3s,
+    background 0.3s,
+    box-shadow 0.3s;
+  box-shadow: 0 4px 20px -6px color-mix(in oklch, var(--accent) 20%, transparent);
+}
+.scroll-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.scroll-top:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--btn-text);
+  box-shadow: 0 8px 28px -8px color-mix(in oklch, var(--accent) 45%, transparent);
+  transform: translateY(-3px);
+}
+.scroll-top:active {
+  transform: translateY(0);
+}
+.scroll-top svg {
+  width: 20px;
+  height: 20px;
+}
+html.dark .scroll-top {
+  background: var(--bg-surface);
+  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.4);
+}
+html.dark .scroll-top:hover {
+  background: var(--accent);
+  box-shadow: 0 8px 28px -8px color-mix(in oklch, var(--accent) 40%, transparent);
 }

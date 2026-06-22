@@ -11,6 +11,52 @@ themeToggle.addEventListener('click', () => {
   try { localStorage.setItem('nf_theme', isDark ? 'dark' : 'light'); } catch(e) {}
 });
 
+/* ============ BACKGROUND MUSIC ============ */
+const bgMusic = document.getElementById('bgMusic');
+const audioToggle = document.getElementById('audioToggle');
+let musicStarted = false;
+
+function startMusic() {
+  if (musicStarted) return;
+  bgMusic.volume = 0.5;
+  bgMusic.play().then(() => {
+    musicStarted = true;
+    audioToggle.classList.remove('muted');
+  }).catch(() => {
+    // Autoplay blocked — keep muted state, will retry on next interaction
+    audioToggle.classList.add('muted');
+  });
+}
+
+// Try autoplay on first user interaction (browser policy requires gesture)
+function onFirstInteraction() {
+  startMusic();
+  document.removeEventListener('click', onFirstInteraction);
+  document.removeEventListener('touchstart', onFirstInteraction);
+  document.removeEventListener('scroll', onFirstInteraction);
+}
+document.addEventListener('click', onFirstInteraction, { once: true });
+document.addEventListener('touchstart', onFirstInteraction, { once: true });
+document.addEventListener('scroll', onFirstInteraction, { once: true, passive: true });
+
+// Also try immediate autoplay
+startMusic();
+
+audioToggle.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent triggering onFirstInteraction twice
+  if (!musicStarted) {
+    startMusic();
+    return;
+  }
+  if (bgMusic.paused) {
+    bgMusic.play();
+    audioToggle.classList.remove('muted');
+  } else {
+    bgMusic.pause();
+    audioToggle.classList.add('muted');
+  }
+});
+
 /* ============ NAV scroll state ============ */
 const nav = document.getElementById("nav");
 const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 40);
@@ -33,7 +79,7 @@ if (
         }
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    { threshold: 0.05, rootMargin: "0px 0px -5% 0px" }
   );
   reveals.forEach((el) => io.observe(el));
   addEventListener("load", () =>
@@ -41,48 +87,10 @@ if (
   );
 }
 
-/* ============ GUESTBOOK ============ */
-/* === FIREBASE INTEGRATION POINT ===
-   Produksi: ganti loadMessages()/saveMessage() dengan Firebase Realtime DB
-     loadMessages() -> ref('guestbook').on('value', ...)
-     saveMessage()  -> ref('guestbook').push({nama, divisi, pesan, timestamp})
-   Struktur data & rules ada di PRD bagian 7.3. */
-
-const STORE_KEY = "nf_guestbook";
-const SEED = [
-  { nama: "Ust. Abdurrahman", divisi: "Persis",
-    pesan: "Barakallahu lakuma wa baraka alaikuma. Semoga menjadi keluarga dakwah yang diberkahi.",
-    ts: Date.now() - 1000 * 60 * 60 * 26 },
-  { nama: "Siti Maryam", divisi: "Persistri",
-    pesan: "Selamat ananda Nurul, semoga menjadi istri salehah penyejuk hati. Aamiin.",
-    ts: Date.now() - 1000 * 60 * 60 * 9 },
-  { nama: "Rizki Hidayat", divisi: "Pemuda",
-    pesan: "Tahniah akhi Fahri! Semoga sakinah mawaddah warahmah sampai jannah.",
-    ts: Date.now() - 1000 * 60 * 48 },
-  { nama: "Aisyah Nur", divisi: "Pemudi",
-    pesan: "Masyaa Allah, turut berbahagia. Semoga langgeng dan penuh keberkahan ya kak Nurul.",
-    ts: Date.now() - 1000 * 60 * 12 },
-];
-
-function loadMessages() {
-  try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(SEED)); } catch (e) {}
-  return [...SEED];
-}
-
-function saveMessage(msg) {
-  try {
-    const all = loadMessages();
-    all.push(msg);
-    localStorage.setItem(STORE_KEY, JSON.stringify(all));
-  } catch (e) {}
-}
-
+/* ============ GUESTBOOK (Firebase Realtime Database) ============ */
 const gbList = document.getElementById("gbList");
 const gbCount = document.getElementById("gbCount");
+const gbRef = db.ref("guestbook");
 
 const initials = (name) => {
   const p = name.trim().split(/\s+/);
@@ -119,13 +127,33 @@ function msgEl(m, isNew) {
   return el;
 }
 
-function render() {
-  const all = loadMessages().sort((a, b) => b.ts - a.ts);
+// Listen for realtime updates from Firebase
+gbRef.orderByChild("ts").on("value", (snapshot) => {
+  const all = [];
+  snapshot.forEach((child) => {
+    all.push(child.val());
+  });
+  // Sort newest first
+  all.sort((a, b) => b.ts - a.ts);
   gbList.innerHTML = "";
   all.forEach((m) => gbList.appendChild(msgEl(m, false)));
   gbCount.textContent = all.length;
+});
+
+function saveMessage(msg) {
+  return gbRef.push(msg);
 }
-render();
+
+/* ============ SCROLL TO TOP ============ */
+const scrollTopBtn = document.getElementById("scrollTop");
+const toggleScrollTop = () => {
+  scrollTopBtn.classList.toggle("visible", window.scrollY > 400);
+};
+addEventListener("scroll", toggleScrollTop, { passive: true });
+toggleScrollTop();
+scrollTopBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
 /* ============ Form handling ============ */
 const pesan = document.getElementById("pesan");
@@ -138,7 +166,7 @@ const success = document.getElementById("gbSuccess");
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const nama = document.getElementById("nama");
-  const divisi = document.getElementById("divisi").value;
+  const divisi = document.getElementById("selectDivisi").value;
   let ok = true;
   const fNama = document.getElementById("f-nama");
   const fPesan = document.getElementById("f-pesan");
@@ -151,12 +179,15 @@ form.addEventListener("submit", (e) => {
 
   if (!ok) return;
 
-  const msg = { nama: nama.value.trim(), divisi, pesan: pesan.value.trim(), ts: Date.now() };
-  saveMessage(msg);
-  gbList.prepend(msgEl(msg, true));
-  gbCount.textContent = loadMessages().length;
-  form.reset();
-  cnt.textContent = "0";
-  success.classList.add("show");
-  setTimeout(() => success.classList.remove("show"), 3600);
+  const msg = { nama: nama.value.trim(), pesan: pesan.value.trim(), ts: Date.now(), divisi: divisi || "" };
+
+  saveMessage(msg).then(() => {
+    form.reset();
+    cnt.textContent = "0";
+    success.classList.add("show");
+    setTimeout(() => success.classList.remove("show"), 3600);
+  }).catch((err) => {
+    console.error("Gagal menyimpan ucapan:", err);
+    alert("Maaf, gagal mengirim ucapan. Silakan coba lagi.");
+  });
 });

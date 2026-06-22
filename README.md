@@ -1,4 +1,4 @@
-# 💍 Website Ucapan Pernikahan Nurul & Fahri
+# 💍 Website Ucapan Pernikahan
 
 Website satu halaman berisi ucapan selamat dan doa dari **Keluarga Besar PJ Persis Cintaasih** (Persis, Persistri, Pemuda, Pemudi) untuk pernikahan **Nurul & Fahri** — Ahad, 5 Juli 2026.
 
@@ -14,7 +14,7 @@ Disebarkan via tautan WhatsApp, diakses terutama dari ponsel.
 2. **Ucapan Pimpinan** — Quote card dari Ketua PJ Persis Cintaasih
 3. **Pesan 4 Divisi** — Grid kartu dari Persis, Persistri, Pemuda, Pemudi
 4. **Doa & Ayat** — QS. Ar-Rum 21, hadits pernikahan, ornamen geometris
-5. **Buku Tamu** — Form interaktif + daftar ucapan real-time
+5. **Buku Tamu** — Form interaktif + daftar ucapan real-time (Firebase)
 
 ## 🗂 Struktur File
 
@@ -25,9 +25,10 @@ nurul-fahri/
 │   ├── css/
 │   │   └── style.css           # Seluruh gaya visual
 │   ├── js/
-│   │   ├── main.js             # Logika interaksi (theme, nav, reveal, guestbook)
-│   │   └── firebase-config.js  # Konfigurasi Firebase (placeholder)
-│   └── ornaments/              # SVG ornamen terpisah (jika diperlukan)
+│   │   ├── main.js             # Logika interaksi (theme, audio, nav, reveal, guestbook)
+│   │   └── firebase-config.js  # Konfigurasi Firebase
+│   ├── ornaments/              # SVG ornamen terpisah (jika diperlukan)
+│   └── lagu-pernikahan.mp3     # Background music (autoplay)
 ├── docs/                       # Dokumentasi & spesifikasi
 ├── CLAUDE.md                   # Panduan untuk AI assistant
 ├── DESIGN.md                   # Sistem visual (palet, tipografi, ornamen)
@@ -58,19 +59,51 @@ npx serve .
 ## 🌙 Fitur
 
 - **Dark/Light mode** — toggle di navigasi, preferensi tersimpan di localStorage
+- **Background music** — autoplay dengan tombol mute/unmute di navigasi
 - **Scroll reveal** — animasi halus saat section masuk viewport (respects `prefers-reduced-motion`)
-- **Buku tamu** — form validasi + daftar ucapan (localStorage untuk prototipe)
+- **Scroll to top** — floating button muncul setelah scroll 400px
+- **Buku tamu real-time** — form validasi + daftar ucapan via Firebase Realtime Database
 - **Responsif** — mobile-first, tampil baik di 390px hingga 1440px+
 
-## 🔥 Integrasi Firebase (Produksi)
+## 🔥 Integrasi Firebase
 
-Buku tamu saat ini memakai localStorage sebagai prototipe. Untuk produksi:
+Buku tamu menggunakan Firebase Realtime Database untuk menyimpan dan menampilkan ucapan secara real-time.
+
+### Setup:
 
 1. Buat project di [Firebase Console](https://console.firebase.google.com)
-2. Aktifkan Realtime Database
+2. Aktifkan Realtime Database (region: `asia-southeast1`)
 3. Isi konfigurasi di `assets/js/firebase-config.js`
-4. Uncomment script Firebase SDK di `index.html`
-5. Terapkan security rules (lihat [PRD bagian 7.3](docs/superpowers/specs/2026-06-17-website-ucapan-pernikahan-design.md))
+4. Terapkan security rules di Firebase Console → Database → Rules:
+
+```json
+{
+  "rules": {
+    "guestbook": {
+      ".read": true,
+      ".write": true,
+      "$entry": {
+        ".validate": "newData.hasChildren(['nama', 'pesan', 'ts', 'divisi']) && newData.child('nama').isString() && newData.child('nama').val().length > 0 && newData.child('nama').val().length <= 40 && newData.child('pesan').isString() && newData.child('pesan').val().length > 0 && newData.child('pesan').val().length <= 300 && newData.child('ts').isNumber() && newData.child('divisi').isString() && newData.child('divisi').val().length <= 30"
+      }
+    }
+  }
+}
+```
+
+### Struktur Data:
+
+```json
+{
+  "guestbook": {
+    "-uniqueKey": {
+      "nama": "Nama Pengirim",
+      "divisi": "Persis",
+      "pesan": "Barakallahu lakuma...",
+      "ts": 1719100000000
+    }
+  }
+}
+```
 
 ## 🌐 Deploy
 
