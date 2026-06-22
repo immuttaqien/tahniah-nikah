@@ -127,6 +127,17 @@ function render() {
 }
 render();
 
+/* ============ SCROLL TO TOP ============ */
+const scrollTopBtn = document.getElementById("scrollTop");
+const toggleScrollTop = () => {
+  scrollTopBtn.classList.toggle("visible", window.scrollY > 400);
+};
+addEventListener("scroll", toggleScrollTop, { passive: true });
+toggleScrollTop();
+scrollTopBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
 /* ============ Form handling ============ */
 const pesan = document.getElementById("pesan");
 const cnt = document.getElementById("cnt");
