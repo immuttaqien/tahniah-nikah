@@ -421,7 +421,7 @@ html.dark .hero {
 }
 .hero .dua {
   font-family: var(--arabic);
-  font-size: clamp(1.7rem, 5vw, 2.85rem);
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
   line-height: 1.95;
   color: var(--text-primary);
   direction: rtl;
@@ -858,23 +858,26 @@ html.dark .ayat-orn svg { opacity: 0.9; }
   background: linear-gradient(180deg, var(--bg-deep), var(--bg-body));
 }
 .tamu-wrap {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 44px;
   max-width: 1000px;
   margin: 0 auto;
 }
 @media (min-width: 880px) {
   .tamu-wrap {
+    display: grid;
     grid-template-columns: 0.82fr 1.18fr;
     gap: 52px;
     align-items: start;
   }
+  .gb-form {
+    position: sticky;
+    top: 96px;
+  }
 }
 
 .gb-form {
-  position: sticky;
-  top: 96px;
   padding: 36px 30px;
   border-radius: 14px;
   border: 1px solid var(--card-border);
@@ -1057,6 +1060,18 @@ html.dark .field select {
   max-height: 580px;
   overflow-y: auto;
   padding-right: 10px;
+}
+@media (max-width: 879px) {
+  .gb-list {
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+  /* Force guestbook messages visible on mobile — override reveal animation */
+  html.anim .tamu-wrap > .reveal.d2 {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 .gb-list::-webkit-scrollbar { width: 6px; }
 .gb-list::-webkit-scrollbar-thumb {
