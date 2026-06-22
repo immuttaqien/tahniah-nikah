@@ -87,48 +87,10 @@ if (
   );
 }
 
-/* ============ GUESTBOOK ============ */
-/* === FIREBASE INTEGRATION POINT ===
-   Produksi: ganti loadMessages()/saveMessage() dengan Firebase Realtime DB
-     loadMessages() -> ref('guestbook').on('value', ...)
-     saveMessage()  -> ref('guestbook').push({nama, divisi, pesan, timestamp})
-   Struktur data & rules ada di PRD bagian 7.3. */
-
-const STORE_KEY = "nf_guestbook";
-const SEED = [
-  { nama: "Ust. Abdurrahman", divisi: "Persis",
-    pesan: "Barakallahu lakuma wa baraka alaikuma. Semoga menjadi keluarga dakwah yang diberkahi.",
-    ts: Date.now() - 1000 * 60 * 60 * 26 },
-  { nama: "Siti Maryam", divisi: "Persistri",
-    pesan: "Selamat ananda Nurul, semoga menjadi istri salehah penyejuk hati. Aamiin.",
-    ts: Date.now() - 1000 * 60 * 60 * 9 },
-  { nama: "Rizki Hidayat", divisi: "Pemuda",
-    pesan: "Tahniah akhi Fahri! Semoga sakinah mawaddah warahmah sampai jannah.",
-    ts: Date.now() - 1000 * 60 * 48 },
-  { nama: "Aisyah Nur", divisi: "Pemudi",
-    pesan: "Masyaa Allah, turut berbahagia. Semoga langgeng dan penuh keberkahan ya kak Nurul.",
-    ts: Date.now() - 1000 * 60 * 12 },
-];
-
-function loadMessages() {
-  try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(SEED)); } catch (e) {}
-  return [...SEED];
-}
-
-function saveMessage(msg) {
-  try {
-    const all = loadMessages();
-    all.push(msg);
-    localStorage.setItem(STORE_KEY, JSON.stringify(all));
-  } catch (e) {}
-}
-
+/* ============ GUESTBOOK (Firebase Realtime Database) ============ */
 const gbList = document.getElementById("gbList");
 const gbCount = document.getElementById("gbCount");
+const gbRef = db.ref("guestbook");
 
 const initials = (name) => {
   const p = name.trim().split(/\s+/);
@@ -165,13 +127,22 @@ function msgEl(m, isNew) {
   return el;
 }
 
-function render() {
-  const all = loadMessages().sort((a, b) => b.ts - a.ts);
+// Listen for realtime updates from Firebase
+gbRef.orderByChild("ts").on("value", (snapshot) => {
+  const all = [];
+  snapshot.forEach((child) => {
+    all.push(child.val());
+  });
+  // Sort newest first
+  all.sort((a, b) => b.ts - a.ts);
   gbList.innerHTML = "";
   all.forEach((m) => gbList.appendChild(msgEl(m, false)));
   gbCount.textContent = all.length;
+});
+
+function saveMessage(msg) {
+  return gbRef.push(msg);
 }
-render();
 
 /* ============ SCROLL TO TOP ============ */
 const scrollTopBtn = document.getElementById("scrollTop");
@@ -195,7 +166,7 @@ const success = document.getElementById("gbSuccess");
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const nama = document.getElementById("nama");
-  const divisi = document.getElementById("divisi").value;
+  const divisi = document.getElementById("selectDivisi").value;
   let ok = true;
   const fNama = document.getElementById("f-nama");
   const fPesan = document.getElementById("f-pesan");
@@ -208,12 +179,15 @@ form.addEventListener("submit", (e) => {
 
   if (!ok) return;
 
-  const msg = { nama: nama.value.trim(), divisi, pesan: pesan.value.trim(), ts: Date.now() };
-  saveMessage(msg);
-  gbList.prepend(msgEl(msg, true));
-  gbCount.textContent = loadMessages().length;
-  form.reset();
-  cnt.textContent = "0";
-  success.classList.add("show");
-  setTimeout(() => success.classList.remove("show"), 3600);
+  const msg = { nama: nama.value.trim(), pesan: pesan.value.trim(), ts: Date.now(), divisi: divisi || "" };
+
+  saveMessage(msg).then(() => {
+    form.reset();
+    cnt.textContent = "0";
+    success.classList.add("show");
+    setTimeout(() => success.classList.remove("show"), 3600);
+  }).catch((err) => {
+    console.error("Gagal menyimpan ucapan:", err);
+    alert("Maaf, gagal mengirim ucapan. Silakan coba lagi.");
+  });
 });

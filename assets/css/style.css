@@ -1072,9 +1072,9 @@ html.dark .field select {
 }
 @media (max-width: 879px) {
   .gb-list {
-    max-height: none;
-    overflow-y: visible;
-    padding-right: 0;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 6px;
   }
   /* Force guestbook messages visible on mobile — override reveal animation */
   html.anim .tamu-wrap > .reveal.d2 {

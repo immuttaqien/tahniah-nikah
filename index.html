@@ -49,7 +49,7 @@
       <div class="nav-brand">Nurul <span>&amp;</span> Fahri</div>
       <div class="nav-links">
         <a href="#pimpinan">Ucapan Pimpinan</a>
-        <a href="#divisi">Pesan Divisi</a>
+        <a href="#divisi">Pesan Otonom</a>
         <a href="#ayat">Doa &amp; Ayat</a>
         <a href="#tamu">Buku Tamu</a>
         <button class="audio-toggle" id="audioToggle" type="button" aria-label="Mute/Unmute musik">
@@ -110,7 +110,7 @@
         <p class="date">Ahad, 5 Juli 2026</p>
 
         <p class="from">
-          Dengan penuh cinta &amp; doa, dari
+          Dengan penuh cinta &amp; doa dari
           <strong>Keluarga Besar PJ Persis Cintaasih</strong>
         </p>
       </div>
@@ -176,7 +176,7 @@
               <span class="line r"></span>
             </div>
           </div>
-          <h2>Pesan dari Setiap Divisi</h2>
+          <h2>Pesan dari Setiap Otonom</h2>
           <p class="sub">Satu keluarga, satu doa untuk Nurul &amp; Fahri</p>
         </div>
 
@@ -336,9 +336,9 @@
             </div>
 
             <div class="field">
-              <label for="divisi">Asal Divisi / Jabatan
+              <label for="selectDivisi">Asal Otonom
                 <span class="opt">(opsional)</span></label>
-              <select id="divisi">
+              <select id="selectDivisi">
                 <option value="">— Pilih —</option>
                 <option>Persis</option>
                 <option>Persistri</option>
@@ -358,7 +358,7 @@
 
             <button type="submit" class="gb-btn">Kirim Ucapan</button>
             <p class="gb-success" id="gbSuccess">
-              Jazakallahu khairan — ucapan Anda telah terkirim. 🤍
+              Jazakallahu khairan, ucapan Anda telah terkirim. 🤍
             </p>
           </form>
 
@@ -387,10 +387,10 @@
       <p class="yr">Dipersembahkan dengan doa &middot; 2026</p>
     </footer>
 
-    <!-- Firebase (uncomment saat produksi) -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script> -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script> -->
-    <!-- <script src="assets/js/firebase-config.js"></script> -->
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
 
     <!-- Background music -->
     <audio id="bgMusic" src="assets/audio/lagu-pernikahan.mp3" loop preload="auto"></audio>
