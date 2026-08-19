@@ -124,4 +124,6 @@ Beberapa bagian masih perlu diganti dengan konten resmi dari organisasi sebelum 
 
 ## 📜 Lisensi
 
-Proyek internal Keluarga Besar PJ Persis Cintaasih.
+Kode ([MIT License](LICENSE)) bebas dipakai/dimodifikasi, misalnya sebagai template website ucapan pernikahan lain.
+
+Konten (nama mempelai, kutipan pimpinan & divisi, doa, audio) adalah milik Keluarga Besar PJ Persis Cintaasih dan **tidak** termasuk dalam izin MIT — jangan gunakan ulang tanpa izin.
