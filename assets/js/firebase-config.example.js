@@ -28,18 +28,20 @@
         }
       }
    
-   JANGAN commit file ini dengan kredensial asli ke repo publik.
+   Ini adalah TEMPLATE. Copy file ini menjadi `firebase-config.js` di folder
+   yang sama, isi dengan nilai asli dari Firebase Console. `firebase-config.js`
+   sudah di-gitignore sehingga kredensial asli tidak akan pernah ter-commit.
    ============================================================ */
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "nurul-fahri",
+  projectId: "YOUR_PROJECT",
   storageBucket: "YOUR_PROJECT.firebasestorage.app",
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID",
-  measurementId: "G-FPCC0BZ1X0"
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 
 firebase.initializeApp(firebaseConfig);

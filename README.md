@@ -20,20 +20,20 @@ Disebarkan via tautan WhatsApp, diakses terutama dari ponsel.
 
 ```
 nurul-fahri/
-├── index.html                  # Halaman utama
-├── assets/
-│   ├── css/
-│   │   └── style.css           # Seluruh gaya visual
-│   ├── js/
-│   │   ├── main.js             # Logika interaksi (theme, audio, nav, reveal, guestbook)
-│   │   └── firebase-config.js  # Konfigurasi Firebase
-│   ├── ornaments/              # SVG ornamen terpisah (jika diperlukan)
-│   └── lagu-pernikahan.mp3     # Background music (autoplay)
-├── docs/                       # Dokumentasi & spesifikasi
-├── CLAUDE.md                   # Panduan untuk AI assistant
-├── DESIGN.md                   # Sistem visual (palet, tipografi, ornamen)
-└── PRODUCT.md                  # Register brand & prinsip desain
+├── index.html                          # Halaman utama
+└── assets/
+    ├── css/
+    │   └── style.css                   # Seluruh gaya visual
+    ├── js/
+    │   ├── main.js                     # Logika interaksi (theme, audio, nav, reveal, guestbook)
+    │   ├── firebase-config.example.js  # Template konfigurasi Firebase (commit)
+    │   └── firebase-config.js          # Konfigurasi asli — gitignored, buat sendiri
+    ├── ornaments/                      # SVG ornamen terpisah (jika diperlukan)
+    └── audio/
+        └── lagu-pernikahan.mp3         # Background music — gitignored, sediakan sendiri (lisensi belum dikonfirmasi)
 ```
+
+> `docs/`, `CLAUDE.md`, `DESIGN.md`, `PRODUCT.md` adalah dokumen kerja internal dan sengaja di-gitignore — tidak muncul di clone publik repo ini.
 
 ## 🚀 Menjalankan
 
@@ -73,7 +73,7 @@ Buku tamu menggunakan Firebase Realtime Database untuk menyimpan dan menampilkan
 
 1. Buat project di [Firebase Console](https://console.firebase.google.com)
 2. Aktifkan Realtime Database (region: `asia-southeast1`)
-3. Isi konfigurasi di `assets/js/firebase-config.js`
+3. Copy `assets/js/firebase-config.example.js` menjadi `assets/js/firebase-config.js` dan isi dengan nilai asli dari Firebase Console (`firebase-config.js` sudah di-gitignore, tidak akan ter-commit)
 4. Terapkan security rules di Firebase Console → Database → Rules:
 
 ```json
@@ -116,10 +116,10 @@ npx netlify deploy --prod --dir .
 
 ## 📝 Konten Placeholder
 
-Beberapa teks masih perlu diganti dengan konten resmi dari organisasi:
+Beberapa bagian masih perlu diganti dengan konten resmi dari organisasi sebelum rilis:
 
-- `[ Nama Ketua ]` — Ucapan Pimpinan
-- `[ Ketua Persis / Persistri / Pemuda / Pemudi ]` — Kartu divisi
+- **Ucapan Pimpinan** (`index.html`, ditandai `<!-- CONTOH teks -->`) — masih kutipan generik, belum ucapan resmi Ketua PJ Persis Cintaasih
+- **Pesan 4 Divisi** — section dinonaktifkan (dikomentari di `index.html`) sampai pesan resmi dari Persis, Persistri, Pemuda, Pemudi tersedia
 - Verifikasi teks Arab dengan mushaf/sumber sahih sebelum rilis
 
 ## 📜 Lisensi

@@ -5,3 +5,10 @@ docs
 CLAUDE.md
 DESIGN.md
 PRODUCT.md
+
+# Real Firebase credentials — copy assets/js/firebase-config.example.js to
+# assets/js/firebase-config.js and fill in your project's values (not committed).
+assets/js/firebase-config.js
+
+# Background music track — rights/license unconfirmed, kept local-only.
+assets/audio/lagu-pernikahan.mp3
